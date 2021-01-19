@@ -6,7 +6,8 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 const SOLUTION_TYPES = {
   BASIC: 'BASIC',
-  PA: 'Μέθοδος Παρούσας Αξίας'
+  PA: 'Μέθοδος Παρούσας Αξίας',
+  ADA: 'Μέθοδος Αναλυτικού Δείκτη Απόδοσης (Α.Δ.Α.)'
 }
 
 class Symbols {
@@ -105,7 +106,6 @@ const App = () => {
               const fta = findFtA(0.08, generatedSymbolsCp[i].end - generatedSymbolsCp[i].start + 1).toFixed(3);
               let intermediateVal = bigA * fta;
 
-              console.log(periods - parseInt(generatedSymbolsCp[i].end) - 1);
               if (periods - parseInt(generatedSymbolsCp[i].end) - 1 !== 0) {
                 if (generatedSymbolsCp[i].end !== -1) {
                   intermediateVal *= findFtP(0.08, periods - generatedSymbolsCp[i].end - 1);
@@ -128,6 +128,8 @@ const App = () => {
           str += "=================\n";
           str2 += '';
           let total = 0;
+
+          console.log(generatedSymbolsCp);
 
           generatedSymbolsCp.map( symbol => {
 
@@ -176,6 +178,36 @@ const App = () => {
           } else {
             str += `\nΘα συνιστούσε επένδυση εφόσον ${total} > 0`;
           }
+        } else if (typeOfSolution === SOLUTION_TYPES.ADA) {
+
+          let yearlyInc;
+          let depreciation;
+          let yearlyOut;
+
+          generatedSymbolsCp.map( symbol => { 
+            if (symbol.symbol === 'p') {
+              str += `\nΑπόσβεσωση=${parseFloat(symbol.value).toFixed(3) * findAtF(0.08, periods - 1) * -1}`
+              depreciation = parseFloat(symbol.value).toFixed(3) * findAtF(0.08, periods - 1) * -1;
+            }
+
+            if (symbol.symbol === 'a') {
+              if (symbol.value > 0) {
+                str += `\nΕτήσια έσοδα=${symbol.value}`
+                yearlyInc = parseFloat(symbol.value).toFixed(3);
+              } else {
+                str += `\nΕτήσια έξοδα=${symbol.value * -1}`
+                yearlyOut = parseFloat(symbol.value).toFixed(3) * -1;
+              }
+            }
+          });
+
+          console.log(periods - 1);
+
+          const yearlyTOut = parseFloat(depreciation) + parseFloat(yearlyOut);
+          const yearlyTInc = parseFloat(yearlyInc) - parseFloat(yearlyTOut);
+
+          str += `\nΣυνολικό ετησίων εξόδων=${depreciation} + ${yearlyOut}=${yearlyTOut}`;
+          str += `\nΕτήσιο Κέρδος= ${yearlyInc} - ${yearlyTOut} = ${yearlyTInc}`
         }
 
         setLogs(str);
@@ -209,11 +241,8 @@ const App = () => {
       //let rData = [...rowData];
 
       let node = gridApi.getRowNode(currRow);
-      console.log(colMin, colMax);
       for (let i=parseInt(colMin);i<parseInt(colMax);i++) {
-        console.log(i);
         node.setDataValue(`period-${i}`, autoVal)
-        console.log(autoVal);
       }
 
     }
