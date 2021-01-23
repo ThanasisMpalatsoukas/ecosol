@@ -72,7 +72,6 @@ const App = () => {
 
         // Goes through each row to find each F individually.
         for(let currRow = 1;currRow < rowData.length; currRow++) {
-          let f = 0;
           // Loop through each period to find each symbol.
           for (let period = 0;period < Object.keys(rowData[currRow]).length; period++) {
             let cellData = rowData[currRow][`period-${period}`];
@@ -131,7 +130,7 @@ const App = () => {
 
           console.log(generatedSymbolsCp);
 
-          generatedSymbolsCp.map( symbol => {
+          generatedSymbolsCp.map( function(symbol) {
 
             if (symbol.symbol === 'p') {
               str += `P=${symbol.value} `;
@@ -184,7 +183,7 @@ const App = () => {
           let depreciation;
           let yearlyOut;
 
-          generatedSymbolsCp.map( symbol => { 
+          generatedSymbolsCp.map( function(symbol) { 
             if (symbol.symbol === 'p') {
               str += `\nΑπόσβεσωση=${parseFloat(symbol.value).toFixed(3) * findAtF(0.08, periods - 1) * -1}`
               depreciation = parseFloat(symbol.value).toFixed(3) * findAtF(0.08, periods - 1) * -1;
@@ -210,6 +209,7 @@ const App = () => {
           str += `\nΕτήσιο Κέρδος= ${yearlyInc} - ${yearlyTOut} = ${yearlyTInc}`
         }
 
+        console.log(total);
         setLogs(str);
 
     }
@@ -255,9 +255,9 @@ const App = () => {
       return perc/((1+perc)**period - 1)
     }
 
-    const findAtP = (perc, period) => {
-      return (perc*(1+perc)**period)/(((1+perc)**period) - 1)
-    }
+    // const findAtP = (perc, period) => {
+    //   return (perc*(1+perc)**period)/(((1+perc)**period) - 1)
+    // }
 
     const findPtA = (perc, period) => {
       return ((1+perc)**period - 1)/(perc*(1+perc)**period);
