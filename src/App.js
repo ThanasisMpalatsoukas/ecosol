@@ -209,9 +209,7 @@ const App = () => {
           str += `\nΕτήσιο Κέρδος= ${yearlyInc} - ${yearlyTOut} = ${yearlyTInc}`
         }
 
-        console.log(total);
         setLogs(str);
-
     }
 
     const symbolAddition = (cellData, symbol, period, generatedSymbolsCp) => {
